@@ -237,7 +237,7 @@ spotless {
         }
         toggleOffOn()
         leadingSpacesToTabs(2)
-        googleJavaFormat("1.29.0").reflowLongStrings(false)
+        googleJavaFormat("1.29.0")
         removeUnusedImports()
         trimTrailingWhitespace()
     }
