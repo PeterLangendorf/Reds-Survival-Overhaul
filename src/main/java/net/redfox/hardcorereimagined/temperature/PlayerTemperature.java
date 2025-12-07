@@ -187,7 +187,7 @@ public class PlayerTemperature {
 
     return goalTemperature
         + (FLUCTUATE_TEMPERATURE.getAsBoolean()
-            ? MathHelper.roundToOneDecimal(Math.random()*2 - 0.5)
+            ? MathHelper.roundToOneDecimal(Math.random() * 2 - 0.5)
             : 0);
   }
 }

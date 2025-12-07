@@ -47,6 +47,7 @@ public class HardcoreReimagined {
     TemperatureHudOverlay.initialize();
     FoodNerf.nerfFoods();
 
-    if (ModClientConfigs.FOOD_TYPE_TOOLTIP_DISPLAY.get()) MinecraftForge.EVENT_BUS.addListener(FoodNerf::addTooltip);
+    if (ModClientConfigs.FOOD_TYPE_TOOLTIP_DISPLAY.get())
+      MinecraftForge.EVENT_BUS.addListener(FoodNerf::addTooltip);
   }
 }

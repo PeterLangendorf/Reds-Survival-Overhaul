@@ -25,7 +25,10 @@ public class ModClientConfigs {
       BUILDER.pop();
       BUILDER.push("foodNerf");
       {
-        FOOD_TYPE_TOOLTIP_DISPLAY = BUILDER.comment("If true, displays the type of food at the top of the tooltip.").define("displayTooltip", true);
+        FOOD_TYPE_TOOLTIP_DISPLAY =
+            BUILDER
+                .comment("If true, displays the type of food at the top of the tooltip.")
+                .define("displayTooltip", true);
       }
       BUILDER.pop();
     }

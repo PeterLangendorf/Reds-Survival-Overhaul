@@ -3,7 +3,6 @@ package net.redfox.hardcorereimagined.food;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.food.FoodProperties;
@@ -72,8 +71,10 @@ public class FoodNerf {
 
     event
         .getToolTip()
-        .add(1,
-            Component.literal(TOOLTIPS.get(event.getItemStack().getItem())).withStyle(ChatFormatting.GRAY));
+        .add(
+            1,
+            Component.literal(TOOLTIPS.get(event.getItemStack().getItem()))
+                .withStyle(ChatFormatting.GRAY));
     event.getToolTip().add(2, Component.empty());
   }
 }
