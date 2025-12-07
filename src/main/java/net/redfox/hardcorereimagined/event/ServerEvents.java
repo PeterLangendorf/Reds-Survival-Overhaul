@@ -1,11 +1,15 @@
 package net.redfox.hardcorereimagined.event;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
@@ -14,6 +18,8 @@ import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.command.ConfigCommand;
@@ -31,10 +37,7 @@ import net.redfox.hardcorereimagined.networking.packet.TemperatureDataSyncS2CPac
 import net.redfox.hardcorereimagined.symptom.ModSymptoms;
 import net.redfox.hardcorereimagined.temperature.PlayerTemperature;
 import net.redfox.hardcorereimagined.temperature.PlayerTemperatureProvider;
-
-import java.util.Collections;
-import java.util.Set;
-import java.util.WeakHashMap;
+import net.redfox.hardcorereimagined.util.config.ConfigValue;
 
 public class ServerEvents {
   @Mod.EventBusSubscriber(modid = HardcoreReimagined.MOD_ID)
@@ -51,7 +54,24 @@ public class ServerEvents {
   }
 
   @Mod.EventBusSubscriber(modid = HardcoreReimagined.MOD_ID)
-  public static class ServerAnimalEvents {
+  public static class ServerEnvironmentEvents {
+    @SubscribeEvent
+    public static void onCropGrowth(BlockEvent.CropGrowEvent event) {
+      int successChance = 1;
+      successChance *= FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_DIFFICULTY_MULTIPLIER.get(event.getLevel().getDifficulty());
+        for (ConfigValue<Block> configValue : FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.keySet()) {
+          if (configValue.is(event.getState().getBlock())) {
+            for (ConfigValue<Biome> biomeConfigValue : FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.get(configValue).keySet()) {
+              if (biomeConfigValue.is(event.getLevel().getBiome(event.getPos()).get())) {
+                successChance *= FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.get(configValue).get(biomeConfigValue);
+              }
+            }
+          }
+      }
+      if (event.getLevel().getRandom().nextIntBetweenInclusive(1, successChance) != 1) {
+        event.setResult(Event.Result.DENY);
+      }
+    }
     //    @SubscribeEvent
     //    public static void onLivingEntitySpawn(MobSpawnEvent.FinalizeSpawn event) {
     //      if (event.getEntity() instanceof Chicken chicken) {
@@ -170,7 +190,9 @@ public class ServerEvents {
 
   @Mod.EventBusSubscriber(modid = HardcoreReimagined.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
   public static class ServerHealthEvents {
-    private static final Set<Entity> CANCEL_KNOCKBACK_SET = Collections.newSetFromMap(new WeakHashMap<>());
+    private static final Set<Entity> CANCEL_KNOCKBACK_SET =
+        Collections.newSetFromMap(new WeakHashMap<>());
+
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
       if (event.getSource().getEntity() instanceof Player player) {
@@ -184,6 +206,7 @@ public class ServerEvents {
         }
       }
     }
+
     @SubscribeEvent
     public static void onLivingKnockback(LivingKnockBackEvent event) {
       if (CANCEL_KNOCKBACK_SET.remove(event.getEntity())) {
