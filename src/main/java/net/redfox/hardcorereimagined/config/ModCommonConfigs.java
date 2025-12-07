@@ -15,7 +15,8 @@ public class ModCommonConfigs {
   public static final ForgeConfigSpec.ConfigValue<List<String>> BABY_GROWTH_MODIFIERS;
   public static final ForgeConfigSpec.ConfigValue<List<String>> BREEDING_COOLDOWN_MULTIPLIERS;
   public static final ForgeConfigSpec.ConfigValue<List<String>> EGG_TIME_MODIFIERS;
-  public static final ForgeConfigSpec.ConfigValue<List<String>> CROP_GROWTH_MULTIPLIERS;
+  public static final ForgeConfigSpec.ConfigValue<List<String>> CROP_GROWTH_DIFFICULTY_MULTIPLIERS;
+  public static final ForgeConfigSpec.ConfigValue<List<String>> CROP_GROWTH_BIOME_MULTIPLIERS;
   public static final ForgeConfigSpec.ConfigValue<List<String>> GLOBAL_HUNGER_MULTIPLIERS;
   public static final ForgeConfigSpec.ConfigValue<Double> SPAWN_HEALTH_MULTIPLIER;
   public static final ForgeConfigSpec.ConfigValue<Double> SPAWN_HUNGER_MULTIPLIER;
@@ -55,8 +56,8 @@ public class ModCommonConfigs {
   public static final ForgeConfigSpec.ConfigValue<Double> UPPER_MULTIPLIER;
   public static final ForgeConfigSpec.ConfigValue<Double> LOWER_MULTIPLIER;
 
-  public static final ForgeConfigSpec.ConfigValue<Boolean> ARMOR_INSULATIONS_ENABLED;
-  public static final ForgeConfigSpec.ConfigValue<List<String>> ARMOR_INSULATIONS;
+  public static final ForgeConfigSpec.ConfigValue<Boolean> ARMOR_INSULATORS_ENABLED;
+  public static final ForgeConfigSpec.ConfigValue<List<String>> ARMOR_INSULATORS;
 
   public static final ForgeConfigSpec.ConfigValue<Boolean> FOOD_MODIFICATION_ENABLED;
   public static final ForgeConfigSpec.ConfigValue<List<String>> FOOD_CATEGORIES;
@@ -201,7 +202,8 @@ public class ModCommonConfigs {
         {
           INSULATORS_ENABLED =
               BUILDER
-                  .comment("If true, enables temperature fluctuation based on the surrounding blocks")
+                  .comment(
+                      "If true, enables temperature fluctuation based on the surrounding blocks")
                   .define("insulators_enabled", true);
           INSULATORS_VALUES =
               BUILDER
@@ -364,13 +366,13 @@ public class ModCommonConfigs {
         BUILDER.pop();
         BUILDER.push("armor");
         {
-          ARMOR_INSULATIONS_ENABLED =
+          ARMOR_INSULATORS_ENABLED =
               BUILDER
                   .comment(
                       "If true, gives the player an insulation value based on the armor they're wearing.")
                   .comment("Insulation will keep your temperatuer closer to zero no matter what.")
                   .define("armor_insulations_enabled", true);
-          ARMOR_INSULATIONS =
+          ARMOR_INSULATORS =
               BUILDER
                   .comment("A Map of all the armor pieces that give insulation while wearing them")
                   .define(
@@ -416,16 +418,17 @@ public class ModCommonConfigs {
                 .comment("The modifier for the breeding cooldown of animals.")
                 .define("breedingCooldownMultiplier", DEFAULT_DIFFICULTY_MULTIPLIER);
         EGG_COOLDOWN =
-            BUILDER.comment("The base cooldown for eggs hatching").define("eggCooldown", 6000);
+            BUILDER.comment("The base cooldown for eggs being laid").define("eggCooldown", 6000);
         EGG_TIME_MODIFIERS =
             BUILDER
                 .comment("The modifier for the egg laying cooldown of chickens.")
                 .define("eggCooldownMultiplier", DEFAULT_DIFFICULTY_MULTIPLIER);
-        CROP_GROWTH_MULTIPLIERS =
+        CROP_GROWTH_DIFFICULTY_MULTIPLIERS =
             BUILDER
-                .comment("The modifier for the growth time of crops.")
-                .define("cropGrowthMultiplier", DEFAULT_DIFFICULTY_MULTIPLIER);
-
+                .comment("The modifier for the growth time of crops depending on difficulty.")
+                .define("cropGrowthDifficultyMultiplier", DEFAULT_DIFFICULTY_MULTIPLIER);
+        CROP_GROWTH_BIOME_MULTIPLIERS = BUILDER.comment("The modifier for the growth time of crops depending on biome.")
+            .define("cropGrowthBiomeMultiplier", new ArrayList<>(List.of("minecraft:wheat,[[default,0],[minecraft:plains,1]]")));
       }
       BUILDER.pop();
       BUILDER.push("food");
@@ -439,7 +442,10 @@ public class ModCommonConfigs {
                     new ArrayList<>(Arrays.asList("EASY:1.5", "NORMAL:2", "HARD:3", "PEACEFUL:1")));
         BUILDER.push("overrides");
         {
-          FOOD_MODIFICATION_ENABLED = BUILDER.comment("If true, enables the modification of specified foods.").define("foodModificationEnabled", true);
+          FOOD_MODIFICATION_ENABLED =
+              BUILDER
+                  .comment("If true, enables the modification of specified foods.")
+                  .define("foodModificationEnabled", true);
 
           FOOD_CATEGORIES =
               BUILDER
@@ -582,7 +588,11 @@ public class ModCommonConfigs {
         BUILDER.pop();
         BUILDER.push("food_history");
         {
-          FOOD_HISTORY_ENABLED = BUILDER.comment("If true, enables progresive decay from eating the same food repeatedly.").define("food_history_enabled", true);
+          FOOD_HISTORY_ENABLED =
+              BUILDER
+                  .comment(
+                      "If true, enables progresive decay from eating the same food repeatedly.")
+                  .define("food_history_enabled", true);
 
           NUTRITION_DECAY =
               BUILDER
@@ -595,12 +605,10 @@ public class ModCommonConfigs {
 
           MAX_HISTORY =
               BUILDER
-                  .comment(
-                      "The maximum food history that is stored.")
+                  .comment("The maximum food history that is stored.")
                   .defineInRange("Max History", 30, 3, 100);
         }
         BUILDER.pop();
-
       }
       BUILDER.pop();
       BUILDER.push("health");

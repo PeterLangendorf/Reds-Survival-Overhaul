@@ -3,7 +3,10 @@ package net.redfox.hardcorereimagined.config;
 import java.util.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.biome.Biome;
@@ -71,9 +74,14 @@ public class FormattedConfigValues {
     public static final Supplier<Double> LOWER_MULTIPLIER = ModCommonConfigs.LOWER_MULTIPLIER;
 
     public static final BooleanSupplier ARMOR_INSULATIONS_ENABLED =
-        ModCommonConfigs.ARMOR_INSULATIONS_ENABLED::get;
+        ModCommonConfigs.ARMOR_INSULATORS_ENABLED::get;
     public static final Map<ConfigValue<Item>, Pair<Integer, Integer>> ARMOR_INSULATIONS =
         new HashMap<>();
+  }
+
+  public static class EnvironmentNerf {
+    public static final Map<Difficulty, Double> CROP_GROWTH_DIFFICULTY_MULTIPLIER = new HashMap<>();
+    public static final Map<ConfigValue<Block>, Map<ConfigValue<Biome>, Double>> CROP_GROWTH_BIOME_MULTIPLIER = new HashMap<>();
   }
 
   public static class FoodNerf {
@@ -89,7 +97,7 @@ public class FormattedConfigValues {
     createSingleIntegerConfigValues(
         ModCommonConfigs.BLOCK_TEMPERATURES.get(), Temperature.BLOCK_TEMPERATURES, Block.class);
     createPairIntegerConfigValues(
-        ModCommonConfigs.ARMOR_INSULATIONS.get(), Temperature.ARMOR_INSULATIONS, Item.class);
+        ModCommonConfigs.ARMOR_INSULATORS.get(), Temperature.ARMOR_INSULATIONS, Item.class);
     for (String entry : ModCommonConfigs.FOOD_CATEGORIES.get()) {
       String[] split = entry.split(",");
       FoodNerf.FOOD_CATEGORIES.add(
@@ -118,6 +126,51 @@ public class FormattedConfigValues {
           continue;
         }
         FoodNerf.FOOD_MODIFICATIONS.put(item, FoodCategory.getFromString(split[1]));
+      }
+    }
+    for (String entry : ModCommonConfigs.CROP_GROWTH_DIFFICULTY_MULTIPLIERS.get()) {
+      String[] split = entry.split(":");
+      if (Arrays.stream(Difficulty.values()).anyMatch(element -> element.getKey().equals(split[0].toLowerCase()))) {
+        EnvironmentNerf.CROP_GROWTH_DIFFICULTY_MULTIPLIER.put(Difficulty.valueOf(split[0]), Double.parseDouble(split[1]));
+      } else {
+        HardcoreReimagined.LOGGER.warn("Failed to load {}", split[0]);
+      }
+    }
+    for (String entry : ModCommonConfigs.CROP_GROWTH_BIOME_MULTIPLIERS.get()) {
+      String[] split = entry.split(",");
+      HardcoreReimagined.LOGGER.info(split[1]);
+      String[] values = split[1].substring(1, split[1].length()-1).split(",");
+      Map<ConfigValue<Biome>, Double> map = new HashMap<>();
+      for (String value : values) {
+        HardcoreReimagined.LOGGER.info(value);
+        String[] splitB = value.substring(1, value.length()-1).split(",");
+        double multiplier =  Double.parseDouble(splitB[1]);
+        if (splitB[0].startsWith("[")) {
+          ListConfigValue<Biome> listConfigValue = new ListConfigValue<>(splitB[0].split(","), Biome.class);
+          if (listConfigValue.isInvalid(Biome.class)) continue;
+          map.put(listConfigValue, multiplier);
+        } else if (splitB[0].startsWith("#")) {
+          TagConfigValue<Biome> tagConfigValue = new TagConfigValue<>(splitB[0].substring(1), Biome.class);
+          if (tagConfigValue.isInvalid(Biome.class)) continue;
+          map.put(tagConfigValue, multiplier);
+        } else {
+          SingleConfigValue<Biome> singleConfigValue = new SingleConfigValue<>(splitB[0], Biome.class);
+          if (singleConfigValue.isInvalid(Biome.class)) continue;
+          map.put(singleConfigValue, multiplier);
+        }
+      }
+      if (split[0].startsWith("[")) {
+        ListConfigValue<Block> listConfigValue = new ListConfigValue<>(split[0].split(","), Block.class);
+        if (listConfigValue.isInvalid(Block.class)) continue;
+        EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.put(listConfigValue, map);
+      } else if (split[0].startsWith("#")) {
+        TagConfigValue<Block> tagConfigValue = new TagConfigValue<>(split[0].substring(1), Block.class);
+        if (tagConfigValue.isInvalid(Block.class)) continue;
+        EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.put(tagConfigValue, map);
+      } else {
+        SingleConfigValue<Block> singleConfigValue = new SingleConfigValue<>(split[0], Block.class);
+        if (singleConfigValue.isInvalid(Block.class)) continue;
+        EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.put(singleConfigValue, map);
       }
     }
     logLoadedSkippedInvalidDuplicates();
