@@ -428,7 +428,10 @@ public class ModCommonConfigs {
                 .comment("The modifier for the growth time of crops depending on difficulty.")
                 .define("cropGrowthDifficultyMultiplier", DEFAULT_DIFFICULTY_MULTIPLIER);
         CROP_GROWTH_BIOME_MULTIPLIERS = BUILDER.comment("The modifier for the growth time of crops depending on biome.")
-            .define("cropGrowthBiomeMultiplier", new ArrayList<>(List.of("minecraft:wheat,[minecraft:plains,minecraft:forest]")));
+            .define("cropGrowthBiomeMultiplier", new ArrayList<>(List.of(
+                "[minecraft:wheat,minecraft:carrots,minecraft:potatoes,minecraft:beetroots],[minecraft:meadow,minecraft:cherry_grove,minecraft:flower_forest,minecraft:birch_forest,minecraft:sparse_jungle,minecraft:plains,minecraft:sunflower_plains]"
+
+            )));
       }
       BUILDER.pop();
       BUILDER.push("food");

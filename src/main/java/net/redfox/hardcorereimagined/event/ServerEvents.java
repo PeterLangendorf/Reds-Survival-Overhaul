@@ -3,13 +3,17 @@ package net.redfox.hardcorereimagined.event;
 import java.text.Normalizer;
 import java.util.*;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
@@ -60,6 +64,7 @@ public class ServerEvents {
   public static class ServerEnvironmentEvents {
     @SubscribeEvent
     public static void onCropGrowth(BlockEvent.CropGrowEvent event) {
+      if (event.getState().is(Blocks.WATER)) return;
       int successChance = 1;
       boolean inBiome = false;
       for (ConfigValue<Block> configValue : FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.keySet()) {
