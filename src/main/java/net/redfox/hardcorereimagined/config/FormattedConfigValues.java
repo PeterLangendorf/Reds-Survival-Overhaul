@@ -3,8 +3,6 @@ package net.redfox.hardcorereimagined.config;
 import java.util.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
-
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.item.Item;
@@ -81,7 +79,8 @@ public class FormattedConfigValues {
 
   public static class EnvironmentNerf {
     public static final Map<Difficulty, Double> CROP_GROWTH_DIFFICULTY_MULTIPLIER = new HashMap<>();
-    public static final Map<ConfigValue<Block>, List<ConfigValue<Biome>>> CROP_GROWTH_BIOME_MULTIPLIER = new HashMap<>();
+    public static final Map<ConfigValue<Block>, List<ConfigValue<Biome>>>
+        CROP_GROWTH_BIOME_MULTIPLIER = new HashMap<>();
   }
 
   public static class FoodNerf {
@@ -130,8 +129,10 @@ public class FormattedConfigValues {
     }
     for (String entry : ModCommonConfigs.CROP_GROWTH_DIFFICULTY_MULTIPLIERS.get()) {
       String[] split = entry.split(":");
-      if (Arrays.stream(Difficulty.values()).anyMatch(element -> element.getKey().equals(split[0].toLowerCase()))) {
-        EnvironmentNerf.CROP_GROWTH_DIFFICULTY_MULTIPLIER.put(Difficulty.valueOf(split[0]), Double.parseDouble(split[1]));
+      if (Arrays.stream(Difficulty.values())
+          .anyMatch(element -> element.getKey().equals(split[0].toLowerCase()))) {
+        EnvironmentNerf.CROP_GROWTH_DIFFICULTY_MULTIPLIER.put(
+            Difficulty.valueOf(split[0]), Double.parseDouble(split[1]));
       } else {
         HardcoreReimagined.LOGGER.warn("Failed to load {}", split[0]);
       }

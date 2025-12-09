@@ -361,7 +361,7 @@ public class ModCommonConfigs {
                   .comment("The amount of blocks that result in a change of 1 temperature")
                   .comment(
                       "For example, a value of 5 means that every 5 blocks traveled after the start will change your temperature by 1")
-                  .defineInRange("lower_multiplier", 5, 1, Double.MAX_VALUE);
+                  .defineInRange("lower_multiplier", 5, 1, 128d);
         }
         BUILDER.pop();
         BUILDER.push("armor");
@@ -370,8 +370,8 @@ public class ModCommonConfigs {
               BUILDER
                   .comment(
                       "If true, gives the player an insulation value based on the armor they're wearing.")
-                  .comment("Insulation will keep your temperatuer closer to zero no matter what.")
-                  .define("armor_insulations_enabled", true);
+                  .comment("Insulation will keep your temperature closer to zero no matter what.")
+                  .define("armorInsulatorsEnabled", true);
           ARMOR_INSULATORS =
               BUILDER
                   .comment("A Map of all the armor pieces that give insulation while wearing them")
@@ -409,6 +409,31 @@ public class ModCommonConfigs {
       BUILDER.pop();
       BUILDER.push("environment_nerf");
       {
+        BUILDER.push("crops");
+        {
+          CROP_GROWTH_DIFFICULTY_MULTIPLIERS =
+              BUILDER
+                  .comment("The modifier for the growth time of crops depending on difficulty.")
+                  .define("cropGrowthDifficultyMultiplier", DEFAULT_DIFFICULTY_MULTIPLIER);
+          CROP_GROWTH_BIOME_MULTIPLIERS =
+              BUILDER
+                  .comment("The modifier for the growth time of crops depending on biome.")
+                  .define(
+                      "cropGrowthBiomeMultiplier",
+                      new ArrayList<>(
+                          List.of(
+                              "[minecraft:wheat,minecraft:carrots,minecraft:potatoes,minecraft:beetroots],[minecraft:meadow,minecraft:cherry_grove,minecraft:flower_forest,minecraft:forest,minecraft:birch_forest,minecraft:sparse_jungle,minecraft:plains,minecraft:sunflower_plains]",
+                              "[minecraft:pumpkin_stem,minecraft:melon_stem],[minecraft:sparse_jungle,minecraft:jungle,minecraft:bamboo_jungle,minecraft:savanna,minecraft:savanna_plateau,minecraft:windswept_savanna]",
+                              "[minecraft:bamboo,minecraft:cocoa],[minecraft:jungle,minecraft:sparse_jungle,minecraft:bamboo_jungle]",
+                              "minecraft:sugar_cane,[minecraft:river,minecraft:swamp,minecraft:beach,minecraft:savanna,minecraft:savanna_plateau,minecraft:windswept_savanna]",
+                              "minecraft:sweet_berry_bush,[minecraft:taiga,minecraft:old_growth_pine_taiga,minecraft:old_growth_spruce_taiga]",
+                              "minecraft:cactus,[minecraft:desert,minecraft:badlands,minecraft:eroded_badlands]",
+                              "minecraft:kelp,[minecraft:ocean,minecraft:deep_ocean,minecraft:warm_ocean,minecraft:lukewarm_ocean,minecraft:deep_lukewarm_ocean]",
+                              "minecraft:cave_vines,minecraft:lush_caves",
+                              "minecraft:nether_wart,#minecraft:is_nether"
+                          )));
+        }
+        BUILDER.pop();
         BABY_GROWTH_MODIFIERS =
             BUILDER
                 .comment("The modifier for the growth time of baby animals.")
@@ -423,16 +448,6 @@ public class ModCommonConfigs {
             BUILDER
                 .comment("The modifier for the egg laying cooldown of chickens.")
                 .define("eggCooldownMultiplier", DEFAULT_DIFFICULTY_MULTIPLIER);
-        CROP_GROWTH_DIFFICULTY_MULTIPLIERS =
-            BUILDER
-                .comment("The modifier for the growth time of crops depending on difficulty.")
-                .define("cropGrowthDifficultyMultiplier", DEFAULT_DIFFICULTY_MULTIPLIER);
-        CROP_GROWTH_BIOME_MULTIPLIERS = BUILDER.comment("The modifier for the growth time of crops depending on biome.")
-            .define("cropGrowthBiomeMultiplier", new ArrayList<>(List.of(
-                "[minecraft:wheat,minecraft:carrots,minecraft:potatoes,minecraft:beetroots],[minecraft:meadow,minecraft:cherry_grove,minecraft:flower_forest,minecraft:forest,minecraft:birch_forest,minecraft:sparse_jungle,minecraft:plains,minecraft:sunflower_plains]"
-                "[minecraft:pumpkin_stem,minecraft:melon_stem],[minecraft:sparse_jungle,minecraft:jungle,minecraft:savanna,minecraft:savanna_plateau,minecraft:windswept_savanna]",
-                ""
-            )));
       }
       BUILDER.pop();
       BUILDER.push("food");

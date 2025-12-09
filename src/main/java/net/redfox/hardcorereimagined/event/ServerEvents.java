@@ -1,16 +1,12 @@
 package net.redfox.hardcorereimagined.event;
 
-import java.text.Normalizer;
 import java.util.*;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -65,13 +61,19 @@ public class ServerEvents {
     @SubscribeEvent
     public static void onCropGrowth(BlockEvent.CropGrowEvent event) {
       if (event.getState().is(Blocks.WATER) || event.getState().is(Blocks.AIR)) return;
-      //This is bad! Shouldn't round to an int
-      int successChance = FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_DIFFICULTY_MULTIPLIER.get(event.getLevel().getDifficulty()).intValue();
+
+      // This is bad! Shouldn't round to an int
+      int successChance =
+          FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_DIFFICULTY_MULTIPLIER
+              .get(event.getLevel().getDifficulty())
+              .intValue();
       boolean inBiome = true;
-      for (ConfigValue<Block> configValue : FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.keySet()) {
+      for (ConfigValue<Block> configValue :
+          FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.keySet()) {
         if (configValue.is(event.getState().getBlock())) {
           inBiome = false;
-          for (ConfigValue<Biome> biomeConfigValue : FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.get(configValue)) {
+          for (ConfigValue<Biome> biomeConfigValue :
+              FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.get(configValue)) {
             if (biomeConfigValue.is(event.getLevel().getBiome(event.getPos()).get())) {
               inBiome = true;
             }
@@ -201,40 +203,51 @@ public class ServerEvents {
         String crop;
         String biomeList;
         if (entry.startsWith("[")) {
-          crop = entry.substring(0, entry.indexOf("]")+1);
-          biomeList =  entry.substring(entry.indexOf("]") + 2);
+          crop = entry.substring(0, entry.indexOf("]") + 1);
+          biomeList = entry.substring(entry.indexOf("]") + 2);
         } else {
           crop = entry.substring(0, entry.indexOf(","));
-          biomeList =  entry.substring(entry.indexOf(",") + 1);
+          biomeList = entry.substring(entry.indexOf(",") + 1);
         }
         List<ConfigValue<Biome>> biomes = new ArrayList<>();
-        for (String biome : biomeList.substring(1, biomeList.length()-1).split(",")) {
+        HardcoreReimagined.LOGGER.info("blegg " + biomeList);
+        for (String biome : biomeList.substring((biomeList.startsWith("[") ? 1 : 0), biomeList.length() - (biomeList.startsWith("[") ? 1 : 0)).split(",")) {
+          HardcoreReimagined.LOGGER.info("blegg " + biome);
           if (biome.startsWith("[")) {
-            ListConfigValue<Biome> listConfigValue = new ListConfigValue<>(biome.substring(1, biome.length()-1).split(","), Biome.class);
-            if (listConfigValue.isInvalid(Biome.class)) return;
+            ListConfigValue<Biome> listConfigValue =
+                new ListConfigValue<>(
+                    biome.substring(1, biome.length() - 1).split(","), Biome.class);
+            if (listConfigValue.isInvalid(Biome.class)) continue;
             biomes.add(listConfigValue);
           } else if (biome.startsWith("#")) {
-            TagConfigValue<Biome> tagConfigValue = new TagConfigValue<>(biome.substring(1), Biome.class);
-            if (tagConfigValue.isInvalid(Biome.class)) return;
+            TagConfigValue<Biome> tagConfigValue =
+                new TagConfigValue<>(biome.substring(1), Biome.class);
+            if (tagConfigValue.isInvalid(Biome.class)) continue;
             biomes.add(tagConfigValue);
           } else {
-            SingleConfigValue<Biome> singleConfigValue = new SingleConfigValue<>(biome, Biome.class);
-            if (singleConfigValue.isInvalid(Biome.class)) return;
+            SingleConfigValue<Biome> singleConfigValue =
+                new SingleConfigValue<>(biome, Biome.class);
+            if (singleConfigValue.isInvalid(Biome.class)) continue;
             biomes.add(singleConfigValue);
           }
         }
         if (crop.startsWith("[")) {
-          ListConfigValue<Block> listConfigValue = new ListConfigValue<>(crop.substring(1, crop.length()-1).split(","), Block.class);
-          if (listConfigValue.isInvalid(Block.class)) return;
-          FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.put(listConfigValue, biomes);
+          ListConfigValue<Block> listConfigValue =
+              new ListConfigValue<>(crop.substring(1, crop.length() - 1).split(","), Block.class);
+          if (listConfigValue.isInvalid(Block.class)) continue;
+          FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.put(
+              listConfigValue, biomes);
         } else if (crop.startsWith("#")) {
-          TagConfigValue<Block> tagConfigValue = new TagConfigValue<>(crop.substring(1), Block.class);
-          if (tagConfigValue.isInvalid(Block.class)) return;
-          FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.put(tagConfigValue, biomes);
+          TagConfigValue<Block> tagConfigValue =
+              new TagConfigValue<>(crop.substring(1), Block.class);
+          if (tagConfigValue.isInvalid(Block.class)) continue;
+          FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.put(
+              tagConfigValue, biomes);
         } else {
           SingleConfigValue<Block> singleConfigValue = new SingleConfigValue<>(crop, Block.class);
-          if (singleConfigValue.isInvalid(Block.class)) return;
-          FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.put(singleConfigValue, biomes);
+          if (singleConfigValue.isInvalid(Block.class)) continue;
+          FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.put(
+              singleConfigValue, biomes);
         }
       }
     }
