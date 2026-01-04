@@ -5,9 +5,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
@@ -17,14 +14,12 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.command.ConfigCommand;
 import net.redfox.hardcorereimagined.HardcoreReimagined;
 import net.redfox.hardcorereimagined.command.GetTemperature;
 import net.redfox.hardcorereimagined.command.SetTemperature;
-import net.redfox.hardcorereimagined.config.FormattedConfigValues;
 import net.redfox.hardcorereimagined.food.foodHistory.PlayerFoodHistory;
 import net.redfox.hardcorereimagined.food.foodHistory.PlayerFoodHistoryProvider;
 import net.redfox.hardcorereimagined.networking.ModPackets;
@@ -53,31 +48,33 @@ public class ServerEvents {
   public static class ServerEnvironmentEvents {
     @SubscribeEvent
     public static void onCropGrowth(BlockEvent.CropGrowEvent event) {
-//      if (event.getState().is(Blocks.WATER) || event.getState().is(Blocks.AIR)) return;
-//
-//      // This is bad! Shouldn't round to an int
-//      int successChance =
-//          FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_DIFFICULTY_MULTIPLIER
-//              .get(event.getLevel().getDifficulty())
-//              .intValue();
-//      boolean inBiome = true;
-//      for (ConfigValue<Block> configValue :
-//          FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.keySet()) {
-//        if (configValue.is(event.getState().getBlock())) {
-//          inBiome = false;
-//          for (ConfigValue<Biome> biomeConfigValue :
-//              FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.get(configValue)) {
-//            if (biomeConfigValue.is(event.getLevel().getBiome(event.getPos()).get())) {
-//              inBiome = true;
-//            }
-//          }
-//        }
-//      }
-//      if (!inBiome) {
-//        event.setResult(Event.Result.DENY);
-//      } else if (event.getLevel().getRandom().nextIntBetweenInclusive(1, successChance) != 1) {
-//        event.setResult(Event.Result.DENY);
-//      }
+      //      if (event.getState().is(Blocks.WATER) || event.getState().is(Blocks.AIR)) return;
+      //
+      //      // This is bad! Shouldn't round to an int
+      //      int successChance =
+      //          FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_DIFFICULTY_MULTIPLIER
+      //              .get(event.getLevel().getDifficulty())
+      //              .intValue();
+      //      boolean inBiome = true;
+      //      for (ConfigValue<Block> configValue :
+      //          FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.keySet()) {
+      //        if (configValue.is(event.getState().getBlock())) {
+      //          inBiome = false;
+      //          for (ConfigValue<Biome> biomeConfigValue :
+      //
+      // FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.get(configValue)) {
+      //            if (biomeConfigValue.is(event.getLevel().getBiome(event.getPos()).get())) {
+      //              inBiome = true;
+      //            }
+      //          }
+      //        }
+      //      }
+      //      if (!inBiome) {
+      //        event.setResult(Event.Result.DENY);
+      //      } else if (event.getLevel().getRandom().nextIntBetweenInclusive(1, successChance) !=
+      // 1) {
+      //        event.setResult(Event.Result.DENY);
+      //      }
     }
     //    @SubscribeEvent
     //    public static void onLivingEntitySpawn(MobSpawnEvent.FinalizeSpawn event) {

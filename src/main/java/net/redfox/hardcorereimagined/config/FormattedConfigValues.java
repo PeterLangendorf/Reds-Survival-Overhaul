@@ -7,13 +7,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.block.Block;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.redfox.hardcorereimagined.HardcoreReimagined;
 import net.redfox.hardcorereimagined.food.FoodCategory;
-import oshi.util.tuples.Pair;
 
 public class FormattedConfigValues {
   private static final Map<String, Set<String>> loaded = new HashMap<>();
@@ -36,11 +33,11 @@ public class FormattedConfigValues {
     public static final Supplier<Integer> NIGHT_TEMPERATURE = ModCommonConfigs.NIGHT_TEMPERATURE;
 
     public static final BooleanSupplier FIRE_TEMPERATURE_ENABLED =
-        ModCommonConfigs.FIRE_TEMPERATURES_ENABLED::get;
+        ModCommonConfigs.FIRE_TEMPERATURE_ENABLED::get;
     public static final Supplier<Integer> FIRE_TEMPERATURE = ModCommonConfigs.FIRE_TEMPERATURE;
 
     public static final BooleanSupplier ALTITUDE_TEMPERATURE_ENABLED =
-        ModCommonConfigs.ALTITUDE_TEMPERATURES_ENABLED::get;
+        ModCommonConfigs.ALTITUDE_TEMPERATURE_ENABLED::get;
     public static final Supplier<Integer> UPPER_ALTITUDE = ModCommonConfigs.UPPER_ALTITUDE;
     public static final Supplier<Double> UPPER_MULTIPLIER = ModCommonConfigs.UPPER_MULTIPLIER;
     public static final Supplier<Integer> LOWER_ALTITUDE = ModCommonConfigs.LOWER_ALTITUDE;

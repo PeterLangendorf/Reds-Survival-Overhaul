@@ -15,6 +15,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
+import net.redfox.hardcorereimagined.config.ModCommonConfigs;
 import net.redfox.hardcorereimagined.effect.HeatStrokeEffect;
 import net.redfox.hardcorereimagined.effect.HypothermiaEffect;
 import net.redfox.hardcorereimagined.networking.ModPackets;
@@ -53,7 +54,8 @@ public class PlayerTemperature {
       new HashMap<>();
   public static final Map<Block, Double> CACHED_ON_TOP_BLOCK_TEMPERATURES_BOOTS = new HashMap<>();
   public static final JsonArray JSON_ARMOR_INSULATIONS =
-      JsonConfigReader.getOrCreateJsonFile("temperature/armor_insulators", JsonConfigReader.ARMOR_INSULATORS)
+      JsonConfigReader.getOrCreateJsonFile(
+              "temperature/armor_insulators", JsonConfigReader.ARMOR_INSULATORS)
           .get("values")
           .getAsJsonArray();
   public static final Map<Item, Pair<Double, Double>> CACHED_ARMOR_INSULATIONS = new HashMap<>();
@@ -114,140 +116,151 @@ public class PlayerTemperature {
     double goalTemperature = 0;
     // Biome
 
-    if (!CACHED_BIOME_TEMPERATURES.containsKey(currentBiome.get())) {
-      JSON_BIOME_TEMPERATURES.asList().stream()
-          .filter(
-              value ->
-                  value
-                      .getAsJsonObject()
-                      .get("biome")
-                      .getAsString()
-                      .equals(currentBiome.unwrapKey().get().location().toString()))
-          .findFirst()
-          .ifPresentOrElse(
-              (value ->
-                  CACHED_BIOME_TEMPERATURES.put(
-                      currentBiome.get(),
-                      value.getAsJsonObject().get("temperature").getAsDouble())),
-              () -> CACHED_BIOME_TEMPERATURES.put(currentBiome.get(), DEFAULT_BIOME_TEMPERATURE));
+    if (ModCommonConfigs.BIOME_TEMPERATURE_ENABLED.get()) {
+      if (!CACHED_BIOME_TEMPERATURES.containsKey(currentBiome.get())) {
+        JSON_BIOME_TEMPERATURES.asList().stream()
+            .filter(
+                value ->
+                    value
+                        .getAsJsonObject()
+                        .get("biome")
+                        .getAsString()
+                        .equals(currentBiome.unwrapKey().get().location().toString()))
+            .findFirst()
+            .ifPresentOrElse(
+                (value ->
+                    CACHED_BIOME_TEMPERATURES.put(
+                        currentBiome.get(),
+                        value.getAsJsonObject().get("temperature").getAsDouble())),
+                () -> CACHED_BIOME_TEMPERATURES.put(currentBiome.get(), DEFAULT_BIOME_TEMPERATURE));
+      }
+
+      goalTemperature += CACHED_BIOME_TEMPERATURES.get(currentBiome.get());
     }
 
-    goalTemperature += CACHED_BIOME_TEMPERATURES.get(currentBiome.get());
+    if (ModCommonConfigs.BLOCK_INSULATOR_TEMPERATURE_ENABLED.get()) {
+      for (BlockState state :
+          level.getBlockStates(player.getBoundingBox().inflate(5)).distinct().toList()) {
+        if (!CACHED_INSULATOR_TEMPERATURES.containsKey(state.getBlock())) {
+          JSON_INSULATOR_TEMPERATURES.asList().stream()
+              .filter(
+                  value ->
+                      value
+                          .getAsJsonObject()
+                          .get("block")
+                          .getAsString()
+                          .equals(state.getBlockHolder().unwrapKey().get().location().toString()))
+              .findFirst()
+              .ifPresent(
+                  (value ->
+                      CACHED_INSULATOR_TEMPERATURES.put(
+                          state.getBlock(),
+                          value.getAsJsonObject().get("temperature").getAsDouble())));
+        }
 
-    for (BlockState state :
-        level.getBlockStates(player.getBoundingBox().inflate(5)).distinct().toList()) {
-      if (!CACHED_INSULATOR_TEMPERATURES.containsKey(state.getBlock())) {
-        JSON_INSULATOR_TEMPERATURES.asList().stream()
+        goalTemperature += CACHED_INSULATOR_TEMPERATURES.getOrDefault(state.getBlock(), 0d);
+      }
+    }
+
+    if (player.getItemBySlot(EquipmentSlot.FEET).isEmpty()) {
+      if (ModCommonConfigs.INSIDE_BLOCK_TEMPERATURE_ENABLED.get()) {
+        if (!CACHED_INSIDE_BLOCK_TEMPERATURES_BOOTS.containsKey(insideBlock.getBlock())) {
+          JSON_INSIDE_BLOCK_TEMPERATURES.asList().stream()
+              .filter(
+                  value ->
+                      value
+                          .getAsJsonObject()
+                          .get("block")
+                          .getAsString()
+                          .equals(
+                              insideBlock
+                                  .getBlockHolder()
+                                  .unwrapKey()
+                                  .get()
+                                  .location()
+                                  .toString())
+                          && value.getAsJsonObject().get("boots").getAsBoolean())
+              .findFirst()
+              .ifPresent(
+                  value ->
+                      CACHED_INSIDE_BLOCK_TEMPERATURES_BOOTS.put(
+                          insideBlock.getBlock(),
+                          value.getAsJsonObject().get("temperature").getAsDouble()));
+        }
+        goalTemperature +=
+            CACHED_INSIDE_BLOCK_TEMPERATURES_BOOTS.getOrDefault(insideBlock.getBlock(), 0d);
+      }
+      if (ModCommonConfigs.ON_TOP_BLOCK_TEMPERATURE_ENABLED.get()) {
+        if (!CACHED_ON_TOP_BLOCK_TEMPERATURES_BOOTS.containsKey(blockBelow.getBlock())) {
+          JSON_ON_TOP_BLOCK_TEMPERATURES.asList().stream()
+              .filter(
+                  value ->
+                      value
+                          .getAsJsonObject()
+                          .get("block")
+                          .getAsString()
+                          .equals(
+                              blockBelow.getBlockHolder().unwrapKey().get().location().toString())
+                          && value.getAsJsonObject().get("boots").getAsBoolean())
+              .findFirst()
+              .ifPresent(
+                  value ->
+                      CACHED_ON_TOP_BLOCK_TEMPERATURES_BOOTS.put(
+                          blockBelow.getBlock(),
+                          value.getAsJsonObject().get("temperature").getAsDouble()));
+        }
+        goalTemperature +=
+            CACHED_ON_TOP_BLOCK_TEMPERATURES_BOOTS.getOrDefault(blockBelow.getBlock(), 0d);
+      }
+    }
+
+    if (ModCommonConfigs.ON_TOP_BLOCK_TEMPERATURE_ENABLED.get()) {
+      if (!CACHED_ON_TOP_BLOCK_TEMPERATURES_NO_BOOTS.containsKey(blockBelow.getBlock())) {
+        JSON_ON_TOP_BLOCK_TEMPERATURES.asList().stream()
             .filter(
                 value ->
                     value
                         .getAsJsonObject()
                         .get("block")
                         .getAsString()
-                        .equals(state.getBlockHolder().unwrapKey().get().location().toString()))
+                        .equals(
+                            blockBelow.getBlockHolder().unwrapKey().get().location().toString())
+                        && !value.getAsJsonObject().get("boots").getAsBoolean())
             .findFirst()
             .ifPresent(
-                (value ->
-                    CACHED_INSULATOR_TEMPERATURES.put(
-                        state.getBlock(),
-                        value.getAsJsonObject().get("temperature").getAsDouble())));
+                value ->
+                    CACHED_ON_TOP_BLOCK_TEMPERATURES_NO_BOOTS.put(
+                        blockBelow.getBlock(),
+                        value.getAsJsonObject().get("temperature").getAsDouble()));
       }
 
-      goalTemperature += CACHED_INSULATOR_TEMPERATURES.getOrDefault(state.getBlock(), 0d);
+      goalTemperature +=
+          CACHED_ON_TOP_BLOCK_TEMPERATURES_NO_BOOTS.getOrDefault(blockBelow.getBlock(), 0d);
     }
 
-    if (player.getItemBySlot(EquipmentSlot.FEET).isEmpty()) {
-      if (!CACHED_INSIDE_BLOCK_TEMPERATURES_BOOTS.containsKey(insideBlock.getBlock())) {
+    if (ModCommonConfigs.ON_TOP_BLOCK_TEMPERATURE_ENABLED.get()) {
+      if (!CACHED_INSIDE_BLOCK_TEMPERATURES_NO_BOOTS.containsKey(insideBlock.getBlock())) {
         JSON_INSIDE_BLOCK_TEMPERATURES.asList().stream()
             .filter(
                 value ->
                     value
-                            .getAsJsonObject()
-                            .get("block")
-                            .getAsString()
-                            .equals(
-                                insideBlock
-                                    .getBlockHolder()
-                                    .unwrapKey()
-                                    .get()
-                                    .location()
-                                    .toString())
-                        && value.getAsJsonObject().get("boots").getAsBoolean())
+                        .getAsJsonObject()
+                        .get("block")
+                        .getAsString()
+                        .equals(
+                            insideBlock.getBlockHolder().unwrapKey().get().location().toString())
+                        && !value.getAsJsonObject().get("boots").getAsBoolean())
             .findFirst()
             .ifPresent(
                 value ->
-                    CACHED_INSIDE_BLOCK_TEMPERATURES_BOOTS.put(
+                    CACHED_INSIDE_BLOCK_TEMPERATURES_NO_BOOTS.put(
                         insideBlock.getBlock(),
                         value.getAsJsonObject().get("temperature").getAsDouble()));
       }
+
       goalTemperature +=
-          CACHED_INSIDE_BLOCK_TEMPERATURES_BOOTS.getOrDefault(insideBlock.getBlock(), 0d);
-      if (!CACHED_ON_TOP_BLOCK_TEMPERATURES_BOOTS.containsKey(blockBelow.getBlock())) {
-        JSON_ON_TOP_BLOCK_TEMPERATURES.asList().stream()
-            .filter(
-                value ->
-                    value
-                            .getAsJsonObject()
-                            .get("block")
-                            .getAsString()
-                            .equals(
-                                blockBelow.getBlockHolder().unwrapKey().get().location().toString())
-                        && value.getAsJsonObject().get("boots").getAsBoolean())
-            .findFirst()
-            .ifPresent(
-                value ->
-                    CACHED_ON_TOP_BLOCK_TEMPERATURES_BOOTS.put(
-                        blockBelow.getBlock(),
-                        value.getAsJsonObject().get("temperature").getAsDouble()));
-
-      }
-      goalTemperature +=
-          CACHED_ON_TOP_BLOCK_TEMPERATURES_BOOTS.getOrDefault(blockBelow.getBlock(), 0d);
+          CACHED_INSIDE_BLOCK_TEMPERATURES_NO_BOOTS.getOrDefault(insideBlock.getBlock(), 0d);
     }
-
-    if (!CACHED_ON_TOP_BLOCK_TEMPERATURES_NO_BOOTS.containsKey(blockBelow.getBlock())) {
-      JSON_ON_TOP_BLOCK_TEMPERATURES.asList().stream()
-          .filter(
-              value ->
-                  value
-                          .getAsJsonObject()
-                          .get("block")
-                          .getAsString()
-                          .equals(
-                              blockBelow.getBlockHolder().unwrapKey().get().location().toString())
-                      && !value.getAsJsonObject().get("boots").getAsBoolean())
-          .findFirst()
-          .ifPresent(
-              value ->
-                  CACHED_ON_TOP_BLOCK_TEMPERATURES_NO_BOOTS.put(
-                      blockBelow.getBlock(),
-                      value.getAsJsonObject().get("temperature").getAsDouble()));
-    }
-
-    goalTemperature +=
-        CACHED_ON_TOP_BLOCK_TEMPERATURES_NO_BOOTS.getOrDefault(blockBelow.getBlock(), 0d);
-
-    if (!CACHED_INSIDE_BLOCK_TEMPERATURES_NO_BOOTS.containsKey(insideBlock.getBlock())) {
-      JSON_INSIDE_BLOCK_TEMPERATURES.asList().stream()
-          .filter(
-              value ->
-                  value
-                      .getAsJsonObject()
-                      .get("block")
-                      .getAsString()
-                      .equals(
-                          insideBlock.getBlockHolder().unwrapKey().get().location().toString())
-                      && !value.getAsJsonObject().get("boots").getAsBoolean())
-          .findFirst()
-          .ifPresent(
-              value ->
-                  CACHED_INSIDE_BLOCK_TEMPERATURES_NO_BOOTS.put(
-                      insideBlock.getBlock(),
-                      value.getAsJsonObject().get("temperature").getAsDouble()));
-    }
-
-    goalTemperature +=
-        CACHED_INSIDE_BLOCK_TEMPERATURES_NO_BOOTS.getOrDefault(insideBlock.getBlock(), 0d);
 
     // Rain / snow / thunder
     if (WEATHER_TEMPERATURES_ENABLED.getAsBoolean()) {
@@ -288,29 +301,40 @@ public class PlayerTemperature {
                 Math.abs(((UPPER_ALTITUDE.get() - player.getY()) / UPPER_MULTIPLIER.get())));
       }
     }
-      int heatResistance = 0;
-      int coldResistance = 0;
+    int heatResistance = 0;
+    int coldResistance = 0;
 
-      for (ItemStack i : player.getArmorSlots()) {
-        if (!CACHED_ARMOR_INSULATIONS.containsKey(i.getItem())) {
-          JSON_ARMOR_INSULATIONS.asList().stream()
-              .filter(value -> value.getAsJsonObject().get("item").getAsString().equals(i.getItemHolder().unwrapKey().get().location().toString()))
-              .findFirst()
-              .ifPresent(
-                  value -> CACHED_ARMOR_INSULATIONS.put(i.getItem(), new Pair<>(value.getAsJsonObject().get("heat_resistance").getAsDouble(), value.getAsJsonObject().get("cold_resistance").getAsDouble()))
-              );
-        }
+    for (ItemStack i : player.getArmorSlots()) {
+      if (!CACHED_ARMOR_INSULATIONS.containsKey(i.getItem())) {
+        JSON_ARMOR_INSULATIONS.asList().stream()
+            .filter(
+                value ->
+                    value
+                        .getAsJsonObject()
+                        .get("item")
+                        .getAsString()
+                        .equals(i.getItemHolder().unwrapKey().get().location().toString()))
+            .findFirst()
+            .ifPresent(
+                value ->
+                    CACHED_ARMOR_INSULATIONS.put(
+                        i.getItem(),
+                        new Pair<>(
+                            value.getAsJsonObject().get("heat_resistance").getAsDouble(),
+                            value.getAsJsonObject().get("cold_resistance").getAsDouble())));
+      }
 
-        Pair<Double, Double> pair = CACHED_ARMOR_INSULATIONS.getOrDefault(i.getItem(),  new Pair<>(0D, 0D));
-        heatResistance += pair.getA();
-        coldResistance += pair.getB();
+      Pair<Double, Double> pair =
+          CACHED_ARMOR_INSULATIONS.getOrDefault(i.getItem(), new Pair<>(0D, 0D));
+      heatResistance += pair.getA();
+      coldResistance += pair.getB();
 
-        if (goalTemperature < 0) {
-          goalTemperature += coldResistance;
-          if (goalTemperature > 0) goalTemperature = 0;
-        } else if (goalTemperature > 0) {
-          goalTemperature -= heatResistance;
-          if (goalTemperature < 0) goalTemperature = 0;
+      if (goalTemperature < 0) {
+        goalTemperature += coldResistance;
+        if (goalTemperature > 0) goalTemperature = 0;
+      } else if (goalTemperature > 0) {
+        goalTemperature -= heatResistance;
+        if (goalTemperature < 0) goalTemperature = 0;
       }
     }
 

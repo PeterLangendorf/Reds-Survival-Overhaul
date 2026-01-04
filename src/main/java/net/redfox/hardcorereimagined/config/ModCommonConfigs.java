@@ -24,6 +24,11 @@ public class ModCommonConfigs {
 
   public static final ForgeConfigSpec.ConfigValue<Boolean> TEMPERATURE_FLUCTUATION;
 
+  public static final ForgeConfigSpec.ConfigValue<Boolean> BIOME_TEMPERATURE_ENABLED;
+  public static final ForgeConfigSpec.ConfigValue<Boolean> BLOCK_INSULATOR_TEMPERATURE_ENABLED;
+  public static final ForgeConfigSpec.ConfigValue<Boolean> ON_TOP_BLOCK_TEMPERATURE_ENABLED;
+  public static final ForgeConfigSpec.ConfigValue<Boolean> INSIDE_BLOCK_TEMPERATURE_ENABLED;
+
   public static final ForgeConfigSpec.ConfigValue<Boolean> WEATHER_TEMPERATURE_ENABLED;
   public static final ForgeConfigSpec.ConfigValue<Integer> RAIN_TEMPERATURE;
   public static final ForgeConfigSpec.ConfigValue<Integer> SNOW_TEMPERATURE;
@@ -32,10 +37,12 @@ public class ModCommonConfigs {
   public static final ForgeConfigSpec.ConfigValue<Integer> DAY_TEMPERATURE;
   public static final ForgeConfigSpec.ConfigValue<Integer> NIGHT_TEMPERATURE;
 
-  public static final ForgeConfigSpec.ConfigValue<Boolean> FIRE_TEMPERATURES_ENABLED;
+  public static final ForgeConfigSpec.ConfigValue<Boolean> FIRE_TEMPERATURE_ENABLED;
   public static final ForgeConfigSpec.ConfigValue<Integer> FIRE_TEMPERATURE;
 
-  public static final ForgeConfigSpec.ConfigValue<Boolean> ALTITUDE_TEMPERATURES_ENABLED;
+  public static final ForgeConfigSpec.ConfigValue<Boolean> ARMOR_INSULATOR_TEMPERATURE_ENABLED;
+
+  public static final ForgeConfigSpec.ConfigValue<Boolean> ALTITUDE_TEMPERATURE_ENABLED;
   public static final ForgeConfigSpec.ConfigValue<Integer> UPPER_ALTITUDE;
   public static final ForgeConfigSpec.ConfigValue<Integer> LOWER_ALTITUDE;
   public static final ForgeConfigSpec.ConfigValue<Double> UPPER_MULTIPLIER;
@@ -95,91 +102,127 @@ public class ModCommonConfigs {
       BUILDER.pop();
       BUILDER.push("temperature");
       {
-        TEMPERATURE_FLUCTUATION =
-            BUILDER
-                .comment(
-                    "If true, the temperature will fluctuate around its goal by a margin of one.")
-                .define("temperatureFluctuation", true);
+        TEMPERATURE_FLUCTUATION = BUILDER
+            .comment("If true, enables global temperature fluctuation.")
+            .define("temperature_fluctuation", true);
+
+        BUILDER.push("biomes");
+        {
+          BIOME_TEMPERATURE_ENABLED = BUILDER
+              .comment("If true, enables temperature fluctuation based on biomes.")
+              .define("biome_temperature_enabled", true);
+
+          BUILDER.comment("Biomes can be modified in the JSON file at /hardcorereimagined/temperature/biomes.json");
+        }
+        BUILDER.pop();
+
+        BUILDER.push("insulators");
+        {
+          BLOCK_INSULATOR_TEMPERATURE_ENABLED = BUILDER
+              .comment("If true, enables temperature fluctuation based on block insulators.")
+              .define("block_insulator_temperature_enabled", true);
+
+          BUILDER.comment("Block insulators can be modified in the JSON file at /hardcorereimagined/temperature/insulators.json");
+        }
+        BUILDER.pop();
+
+        BUILDER.push("inside_blocks");
+        {
+          INSIDE_BLOCK_TEMPERATURE_ENABLED = BUILDER
+              .comment("If true, enables temperature fluctuation based on inside blocks.")
+              .define("inside_block_temperature_enabled", true);
+
+          BUILDER.comment("Inside blocks can be modified in the JSON file at /hardcorereimagined/temperature/inside_blocks.json");
+        }
+        BUILDER.pop();
+
+        BUILDER.push("on_top_blocks");
+        {
+          ON_TOP_BLOCK_TEMPERATURE_ENABLED = BUILDER
+              .comment("If true, enables temperature fluctuation based on on-top blocks.")
+              .define("on_top_block_temperature_enabled", true);
+
+          BUILDER.comment("On-top blocks can be modified in the JSON file at /hardcorereimagined/temperature/on_top_blocks.json");
+        }
+        BUILDER.pop();
+
         BUILDER.push("weather");
         {
-          WEATHER_TEMPERATURE_ENABLED =
-              BUILDER
-                  .comment("If true, enables temperature fluctuation based on biome.")
-                  .define("weather_temperature_enabled", true);
+          WEATHER_TEMPERATURE_ENABLED = BUILDER
+              .comment("If true, enables temperature fluctuation based on weather.")
+              .define("weather_temperature_enabled", true);
 
-          RAIN_TEMPERATURE =
-              BUILDER
-                  .comment("The amount that your temperature will change while exposed to rain")
-                  .define("rain_temperature", -30);
+          RAIN_TEMPERATURE = BUILDER
+              .comment("The temperature that is applied when exposed to rain")
+              .define("rain_temperature", -30);
 
-          SNOW_TEMPERATURE =
-              BUILDER
-                  .comment("The amount that your temperature will change while exposed to snow")
-                  .define("snow_temperature", -60);
+          SNOW_TEMPERATURE = BUILDER
+              .comment("The temperature that is applied when exposed to snow")
+              .define("snow_temperature", -60);
         }
         BUILDER.pop();
+
         BUILDER.push("time");
         {
-          TIME_TEMPERATURE_ENABLED =
-              BUILDER
-                  .comment("If true, enables temperature fluctuation based on time of day.")
-                  .define("time_temperature_enabled", true);
+          TIME_TEMPERATURE_ENABLED = BUILDER
+              .comment("If true, enables temperature fluctuation based on time.")
+              .define("time_temperature_enabled", true);
 
-          DAY_TEMPERATURE =
-              BUILDER
-                  .comment("The temperature that is applied when it is daytime")
-                  .define("day_temperature", 10);
+          DAY_TEMPERATURE = BUILDER
+              .comment("The temperature that is applied when it is daytime")
+              .define("day_temperature", 10);
 
-          NIGHT_TEMPERATURE =
-              BUILDER
-                  .comment("The temperature that is applied when it is nighttime")
-                  .define("night_temperature", -10);
+          NIGHT_TEMPERATURE = BUILDER
+              .comment("The temperature that is applied when it is nighttime")
+              .define("night_temperature", -10);
         }
         BUILDER.pop();
+
         BUILDER.push("fire");
         {
-          FIRE_TEMPERATURES_ENABLED =
-              BUILDER
-                  .comment(
-                      "If true, enables temperature fluctuation based on whether the player is on fire.")
-                  .define("fire_temperatures_enabled", true);
+          FIRE_TEMPERATURE_ENABLED = BUILDER
+              .comment("If true, enables temperature fluctuation based on fire.")
+              .define("fire_temperature_enabled", true);
 
-          FIRE_TEMPERATURE =
-              BUILDER
-                  .comment("The temperature of being on fire")
-                  .defineInRange("fire_temperature", 50, 1, Integer.MAX_VALUE);
+          FIRE_TEMPERATURE = BUILDER
+              .comment("The temperature that is applied when the player is on fire")
+              .defineInRange("fire_temperature", 50, 1, Integer.MAX_VALUE);
         }
         BUILDER.pop();
+
         BUILDER.push("altitude");
         {
-          ALTITUDE_TEMPERATURES_ENABLED =
-              BUILDER
-                  .comment("If true, enables temperature fluctuation based on player altitude.")
-                  .define("altitude_temperatures_enabled", true);
+          ALTITUDE_TEMPERATURE_ENABLED = BUILDER
+              .comment("If true, enables temperature fluctuation based on altitude.")
+              .define("altitude_temperature_enabled", true);
 
-          UPPER_ALTITUDE =
-              BUILDER
-                  .comment("The upwards y-value when temperature will start changing")
-                  .define("upper_altitude", 80);
+          UPPER_ALTITUDE = BUILDER
+              .comment("The upwards y-value when temperature will start changing")
+              .define("upper_altitude", 80);
 
-          UPPER_MULTIPLIER =
-              BUILDER
-                  .comment("The amount of blocks that result in a change of 1 temperature")
-                  .comment(
-                      "For example, a value of 5 means that every 5 blocks traveled after the start will change your temperature by 1")
-                  .defineInRange("upper_multiplier", 5, 1, Double.MAX_VALUE);
+          UPPER_MULTIPLIER = BUILDER
+              .comment("The amount of blocks that result in a change of 1 temperature")
+              .comment("For example, a value of 5 means that every 5 blocks traveled after the start will change your temperature by 1")
+              .defineInRange("upper_multiplier", 5, 1, 128d);
 
-          LOWER_ALTITUDE =
-              BUILDER
-                  .comment("The downwards y-value when temperature will start changing")
-                  .define("lower_altitude", 40);
+          LOWER_ALTITUDE = BUILDER
+              .comment("The downwards y-value when temperature will start changing")
+              .define("lower_altitude", 40);
 
-          LOWER_MULTIPLIER =
-              BUILDER
-                  .comment("The amount of blocks that result in a change of 1 temperature")
-                  .comment(
-                      "For example, a value of 5 means that every 5 blocks traveled after the start will change your temperature by 1")
-                  .defineInRange("lower_multiplier", 5, 1, 128d);
+          LOWER_MULTIPLIER = BUILDER
+              .comment("The amount of blocks that result in a change of 1 temperature")
+              .comment("For example, a value of 5 means that every 5 blocks traveled after the start will change your temperature by 1")
+              .defineInRange("lower_multiplier", 5, 1, 128d);
+        }
+        BUILDER.pop();
+
+        BUILDER.push("armor_insulators");
+        {
+          ARMOR_INSULATOR_TEMPERATURE_ENABLED = BUILDER
+              .comment("If true, enables temperature fluctuation based on armor insulators.")
+              .define("armor_insulator_temperature_enabled", true);
+
+          BUILDER.comment("Armor insulators can be modified in the JSON file at /hardcorereimagined/temperature/armor_insulators.json");
         }
         BUILDER.pop();
       }
@@ -381,13 +424,13 @@ public class ModCommonConfigs {
                               "farmersdelight:dog_food,SNACK")));
         }
         BUILDER.pop();
-        BUILDER.push("food_history");
+        BUILDER.push("foodHistory");
         {
           FOOD_HISTORY_ENABLED =
               BUILDER
                   .comment(
-                      "If true, enables progresive decay from eating the same food repeatedly.")
-                  .define("food_history_enabled", true);
+                      "If true, enables progressive decay from eating the same food repeatedly.")
+                  .define("foodHistoryEnabled", true);
 
           NUTRITION_DECAY =
               BUILDER
