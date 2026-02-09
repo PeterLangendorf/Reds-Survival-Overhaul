@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
+import net.redfox.hardcorereimagined.config.ModCommonConfigs;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class FoodDataMixin {
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     public void tick(Player pPlayer, CallbackInfo ci) {
-      this.addExhaustion(0.00025F);
+      pPlayer.getFoodData().addExhaustion(ModCommonConfigs.PASSIVE_EXHAUSTION.get());
       Difficulty difficulty = pPlayer.level().getDifficulty();
       this.lastFoodLevel = this.foodLevel;
       if (this.exhaustionLevel > 4.0F) {
