@@ -6,7 +6,9 @@
   "refmap": "hardcorereimagined.refmap.json",
   "mixins": [
     "BoneMealCropBlockMixin",
-    "PlayerMixin"
+    "PlayerMixin",
+    "ChickenMixin",
+    "FoodDataMixin"
   ],
   "client": [
   ],

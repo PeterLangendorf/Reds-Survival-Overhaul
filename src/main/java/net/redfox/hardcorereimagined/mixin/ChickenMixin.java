@@ -3,6 +3,7 @@
  import net.minecraft.sounds.SoundEvents;
  import net.minecraft.util.Mth;
  import net.minecraft.world.Difficulty;
+ import net.minecraft.world.DifficultyInstance;
  import net.minecraft.world.entity.EntityType;
  import net.minecraft.world.entity.animal.Animal;
  import net.minecraft.world.entity.animal.Chicken;
@@ -10,7 +11,9 @@
  import net.minecraft.world.level.Level;
  import net.minecraft.world.level.gameevent.GameEvent;
  import net.minecraft.world.phys.Vec3;
+ import net.redfox.hardcorereimagined.HardcoreReimagined;
  import net.redfox.hardcorereimagined.config.ModCommonConfigs;
+ import net.redfox.hardcorereimagined.environment.ChickenNerf;
  import org.spongepowered.asm.mixin.Mixin;
  import org.spongepowered.asm.mixin.injection.At;
  import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,8 +24,6 @@
 
  @Mixin(Chicken.class)
  public abstract class ChickenMixin extends Animal {
-   private static final Map<Difficulty, Double> DIFFICULTY_MULTIPLIERS = new HashMap<>();
-
   protected ChickenMixin(EntityType<? extends Animal> pEntityType, Level pLevel) {
     super(pEntityType, pLevel);
   }
@@ -57,8 +58,7 @@
           (thisObject.random.nextFloat() - thisObject.random.nextFloat()) * 0.2F + 1.0F);
       thisObject.spawnAtLocation(Items.EGG);
       thisObject.gameEvent(GameEvent.ENTITY_PLACE);
-      Difficulty difficulty = thisObject.level().getDifficulty();
-      int cooldown = ModCommonConfigs.EGG_COOLDOWN.get() * ModCommonConfigs.EGG_TIME_MODIFIERS.get(difficulty);
+      int cooldown = ChickenNerf.getCooldown(thisObject.level().getDifficulty());
       thisObject.eggTime = thisObject.random.nextInt(cooldown) + cooldown;
     }
     ci.cancel();

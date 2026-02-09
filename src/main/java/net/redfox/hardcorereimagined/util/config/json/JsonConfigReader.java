@@ -946,6 +946,13 @@ public class JsonConfigReader {
                                       .add("multiplier", 0.5)
                                       .build()))
                           .build())));
+  public static final Runnable CHICKEN_CONFIG = () -> writeJsonFile("environment/chickens",
+      createDefaultJsonObject(new JsonObjectBuilder().add("egg_cooldown", 600d).add("difficulty_multiplier", createJsonArray(
+          new JsonObjectBuilder().add("difficulty", "peaceful").add("multiplier", 1d).build(),
+          new JsonObjectBuilder().add("difficulty", "easy").add("multiplier", 2d).build(),
+          new JsonObjectBuilder().add("difficulty", "normal").add("multiplier", 4d).build(),
+          new JsonObjectBuilder().add("difficulty", "hard").add("multiplier", 8d).build()
+      )).build()));
 
   public static JsonObject getOrCreateJsonFile(String fileName, Runnable create) {
     if (!new File(fileName).exists()) create.run();
