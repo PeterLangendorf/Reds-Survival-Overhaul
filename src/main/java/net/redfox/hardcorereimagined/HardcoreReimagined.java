@@ -13,6 +13,7 @@ import net.redfox.hardcorereimagined.config.FormattedConfigValues;
 import net.redfox.hardcorereimagined.config.ModClientConfigs;
 import net.redfox.hardcorereimagined.config.ModCommonConfigs;
 import net.redfox.hardcorereimagined.effect.ModEffects;
+import net.redfox.hardcorereimagined.environment.ChickenNerf;
 import net.redfox.hardcorereimagined.environment.CropNerf;
 import net.redfox.hardcorereimagined.event.AppleSkinEvents;
 import net.redfox.hardcorereimagined.food.FoodNerf;
@@ -48,6 +49,7 @@ public class HardcoreReimagined {
     ModPackets.register();
     TemperatureHudOverlay.initialize();
     FoodNerf.nerfFoods();
+    ChickenNerf.init();
 
     if (ModClientConfigs.FOOD_TYPE_TOOLTIP_DISPLAY.get())
       MinecraftForge.EVENT_BUS.addListener(FoodNerf::addTooltip);
