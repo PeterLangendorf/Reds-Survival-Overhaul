@@ -86,7 +86,7 @@ public class ModCommonConfigs {
                 .comment("Global toggle for the food nerf module")
                 .comment("This includes:")
                 .comment(
-                    "  -Greatly reduce the nutrition value and saturation of every food in minecraft")
+                    "  -Greatly reduce the nutrition value and saturation of every food in Minecraft")
                 .comment("  -The decaying food values of each food as you eat it more")
                 .define("global_food_nerf_toggle", true);
         GLOBAL_HEALTH_TOGGLE =
