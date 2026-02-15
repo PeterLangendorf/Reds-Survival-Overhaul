@@ -12,7 +12,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.redfox.survivaloverhaul.config.ModCommonConfigs;
 import net.redfox.survivaloverhaul.effect.HeatStrokeEffect;
 import net.redfox.survivaloverhaul.effect.HypothermiaEffect;
@@ -22,7 +21,6 @@ import net.redfox.survivaloverhaul.util.MathHelper;
 import net.redfox.survivaloverhaul.util.config.json.JsonConfigReader;
 import oshi.util.tuples.Pair;
 
-@AutoRegisterCapability
 public class PlayerTemperature {
   public static final double DEFAULT_BIOME_TEMPERATURE = 0;
   public static final JsonArray JSON_BIOME_TEMPERATURES =

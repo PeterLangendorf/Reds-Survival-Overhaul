@@ -1,13 +1,13 @@
 package net.redfox.survivaloverhaul;
 
 import com.mojang.logging.LogUtils;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
 import net.redfox.survivaloverhaul.client.TemperatureHudOverlay;
 import net.redfox.survivaloverhaul.config.ModClientConfigs;
 import net.redfox.survivaloverhaul.config.ModCommonConfigs;
@@ -24,22 +24,21 @@ public class SurvivalOverhaul {
   public static final String MOD_ID = "survivaloverhaul";
   public static final Logger LOGGER = LogUtils.getLogger();
 
-  public SurvivalOverhaul(FMLJavaModLoadingContext context) {
-    IEventBus modEventBus = context.getModEventBus();
+  public SurvivalOverhaul(IEventBus modEventBus, ModContainer modContainer) {
 
-    context.registerConfig(
+    modContainer.registerConfig(
         ModConfig.Type.COMMON, ModCommonConfigs.SPEC, SurvivalOverhaul.MOD_ID + "/common.toml");
-    context.registerConfig(
+    modContainer.registerConfig(
         ModConfig.Type.CLIENT, ModClientConfigs.SPEC, SurvivalOverhaul.MOD_ID + "/client.toml");
 
     ModEffects.register(modEventBus);
 
     modEventBus.addListener(this::commonSetup);
-    MinecraftForge.EVENT_BUS.addListener(CropNerf::onCropGrowth);
-    MinecraftForge.EVENT_BUS.register(this);
+    NeoForge.EVENT_BUS.addListener(CropNerf::onCropGrowth);
+    NeoForge.EVENT_BUS.register(this);
 
     if (ModList.get().isLoaded("appleskin")) {
-      MinecraftForge.EVENT_BUS.addListener(AppleSkinEvents::onAppleSkinFoodEvent);
+      NeoForge.EVENT_BUS.addListener(AppleSkinEvents::onAppleSkinFoodEvent);
     }
   }
 
@@ -50,6 +49,6 @@ public class SurvivalOverhaul {
     ConfigUtil.init();
 
     if (ModClientConfigs.FOOD_TYPE_TOOLTIP_DISPLAY.get())
-      MinecraftForge.EVENT_BUS.addListener(FoodNerf::addTooltip);
+      NeoForge.EVENT_BUS.addListener(FoodNerf::addTooltip);
   }
 }

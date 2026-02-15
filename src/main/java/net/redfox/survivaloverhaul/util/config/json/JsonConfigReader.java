@@ -4,7 +4,8 @@ import com.google.gson.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraftforge.fml.loading.FMLPaths;
+
+import net.neoforged.fml.loading.FMLPaths;
 import net.redfox.survivaloverhaul.SurvivalOverhaul;
 
 public class JsonConfigReader {

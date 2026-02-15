@@ -1,7 +1,7 @@
 package net.redfox.survivaloverhaul.util;
 
 import net.minecraft.world.item.Item;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 
 import java.lang.reflect.Field;
 import java.util.Map;
