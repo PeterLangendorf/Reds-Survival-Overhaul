@@ -26,7 +26,6 @@ public class Weight {
   public static float getTotalWeight(Player player) {
     float weight = 0;
     for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-      player.getInventory().selected
       ItemStack stack = player.getInventory().getItem(i);
         Float add = WEIGHT_MAP.getOrDefault(stack.getItem(), null);
         if (add != null) weight += add * stack.getCount();
