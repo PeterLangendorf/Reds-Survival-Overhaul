@@ -217,7 +217,7 @@ public class ModCommonConfigs {
           BONE_MEAL_UPPER_LIMIT = BUILDER.comment("The upper limit for the amount of ticks a piece of bone meal can accelerate a plant growth, depending on difficulty.")
               .defineList("boneMealUpperLimit", new ArrayList<>(Arrays.asList("peaceful:5", "easy:4", "normal:2", "hard:0")), obj -> obj instanceof String);
           BONE_MEAL_LOWER_LIMIT = BUILDER.comment("The lower limit for the amount of ticks a piece of bone meal can accelerate a plant growth, depending on difficulty.")
-              .defineList("boneMealLowerLimit", new ArrayList<>(Arrays.asList("peaceful:2", "esay:1", "normal:0", "hard:0")), obj -> obj instanceof String);
+              .defineList("boneMealLowerLimit", new ArrayList<>(Arrays.asList("peaceful:2", "easy:1", "normal:0", "hard:0")), obj -> obj instanceof String);
         }
         BUILDER.pop();
         BABY_GROWTH_MODIFIERS =
