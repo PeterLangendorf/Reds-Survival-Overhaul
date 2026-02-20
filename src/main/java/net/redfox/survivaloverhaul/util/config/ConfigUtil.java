@@ -18,7 +18,7 @@ public class ConfigUtil {
 
   public static void init() {
     egg_cooldown = ModCommonConfigs.EGG_COOLDOWN.get();
-    passive_hunger = ModCommonConfigs.PASSIVE_EXHAUSTION.get().floatValue() / 300f; //Convert to exhaustion per tick
+    passive_hunger = ModCommonConfigs.PASSIVE_EXHAUSTION_RATE.get().floatValue() / 300f; //Convert to exhaustion per tick
     StringParsingUtil.fillMap(EGG_MULTIPLIERS, ModCommonConfigs.EGG_TIME_MODIFIERS.get(), Difficulty::byName, Double::parseDouble);
     StringParsingUtil.fillMap(GLOBAL_HUNGER_MULTIPLIERS, ModCommonConfigs.GLOBAL_HUNGER_MULTIPLIERS.get(), Difficulty::byName, Double::parseDouble);
     StringParsingUtil.fillMap(BREEDING_MULTIPLIERS, ModCommonConfigs.BREEDING_COOLDOWN_MULTIPLIERS.get(), Difficulty::byName, Double::parseDouble);

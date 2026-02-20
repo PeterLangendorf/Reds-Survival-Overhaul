@@ -19,7 +19,8 @@ public class ModCommonConfigs {
   public static final ForgeConfigSpec.ConfigValue<List<? extends String>> EGG_TIME_MODIFIERS;
   public static final ForgeConfigSpec.ConfigValue<List<? extends String>> CROP_GROWTH_DIFFICULTY_MULTIPLIERS;
   public static final ForgeConfigSpec.ConfigValue<List<? extends String>> GLOBAL_HUNGER_MULTIPLIERS;
-  public static final ForgeConfigSpec.ConfigValue<Double> PASSIVE_EXHAUSTION;
+  public static final ForgeConfigSpec.ConfigValue<Boolean> PASSIVE_EXHAUSTION_ENABLED;
+  public static final ForgeConfigSpec.ConfigValue<Double> PASSIVE_EXHAUSTION_RATE;
   public static final ForgeConfigSpec.ConfigValue<Double> SPAWN_HEALTH_MULTIPLIER;
   public static final ForgeConfigSpec.ConfigValue<Double> SPAWN_HUNGER_MULTIPLIER;
   public static final ForgeConfigSpec.ConfigValue<Integer> EGG_COOLDOWN;
@@ -232,23 +233,28 @@ public class ModCommonConfigs {
             BUILDER
                 .comment("The modifier for the egg laying cooldown of chickens.")
                 .defineList("eggCooldownMultiplier", DEFAULT_DIFFICULTY_MULTIPLIER, obj -> obj instanceof String);
-        PASSIVE_EXHAUSTION =
-            BUILDER
-                .comment("The exhaustion that is applied passively to the character.")
-                .comment("This number is in hunger/minute.")
-                .comment("For example, a value of 1 means that every minute, the player will have lost 1 hunger.")
-                .define("passiveExhaustion", 1d);
       }
       BUILDER.pop();
       BUILDER.push("food");
       {
-        GLOBAL_HUNGER_MULTIPLIERS =
-            BUILDER
-                .comment(
-                    "The global hunger multiplier. Every single action's hunger loss will be multiplied by this.")
-                .defineList(
-                    "globalHungerMultiplier",
-                    new ArrayList<>(Arrays.asList("peaceful:1", "easy:1.5", "normal:2", "hard:3")), obj -> obj instanceof String);
+        BUILDER.push("global");
+        {
+          BUILDER.comment("Passive exhaustion is exhaustion that is applied constantly to the player, no matter what they're doing.");
+          PASSIVE_EXHAUSTION_ENABLED = BUILDER.comment("If true, enables passive exhaustion").define("passiveExhaustionEnabled", true);
+          PASSIVE_EXHAUSTION_RATE =
+              BUILDER
+                  .comment("The rate, in hunger per minute, that exhaustion that is applied to the player.")
+                  .comment("For example, a value of 1 means that every minute, the player will have lost 1 hunger.")
+                  .define("passiveExhaustion", 1d);
+          GLOBAL_HUNGER_MULTIPLIERS =
+              BUILDER
+                  .comment(
+                      "The global hunger multiplier. Every single action's hunger loss will be multiplied by this.")
+                  .defineList(
+                      "globalHungerMultiplier",
+                      new ArrayList<>(Arrays.asList("peaceful:1", "easy:1.5", "normal:2", "hard:3")), obj -> obj instanceof String);
+        }
+        BUILDER.pop();
         BUILDER.push("overrides");
         {
           FOOD_MODIFICATION_ENABLED =
