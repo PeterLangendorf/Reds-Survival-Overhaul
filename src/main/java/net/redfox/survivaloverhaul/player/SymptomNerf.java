@@ -1,11 +1,11 @@
-package net.redfox.survivaloverhaul.symptom;
+package net.redfox.survivaloverhaul.player;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 
-public class ModSymptoms {
+public class SymptomNerf {
   public static void periodicUpdate(ServerPlayer player) {
     if (player.isCreative() || player.isDeadOrDying()) return;
     float health = player.getHealth();

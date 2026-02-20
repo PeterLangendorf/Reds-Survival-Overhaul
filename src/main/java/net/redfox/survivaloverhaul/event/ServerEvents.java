@@ -2,19 +2,15 @@ package net.redfox.survivaloverhaul.event;
 
 import java.util.*;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
@@ -32,7 +28,7 @@ import net.redfox.survivaloverhaul.networking.ModPackets;
 import net.redfox.survivaloverhaul.networking.packet.EatFoodC2SPacket;
 import net.redfox.survivaloverhaul.networking.packet.FoodHistorySyncS2CPacket;
 import net.redfox.survivaloverhaul.networking.packet.TemperatureDataSyncS2CPacket;
-import net.redfox.survivaloverhaul.symptom.ModSymptoms;
+import net.redfox.survivaloverhaul.player.SymptomNerf;
 import net.redfox.survivaloverhaul.temperature.PlayerTemperature;
 import net.redfox.survivaloverhaul.temperature.PlayerTemperatureProvider;
 import net.redfox.survivaloverhaul.weight.Weight;
@@ -59,7 +55,7 @@ public class ServerEvents {
         if (event.getServer().getTickCount() % 20 == 0) {
           for (ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
             PlayerTemperature.periodicUpdate(player);
-            ModSymptoms.periodicUpdate(player);
+            SymptomNerf.periodicUpdate(player);
             Weight.applyWeightModifier(player);
           }
         }
@@ -156,7 +152,6 @@ public class ServerEvents {
     private static final Set<Entity> CANCEL_KNOCKBACK_SET =
         Collections.newSetFromMap(new WeakHashMap<>());
 
-    @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
       if (event.getSource().getEntity() instanceof Player player) {
         if (player.level().isClientSide()) {

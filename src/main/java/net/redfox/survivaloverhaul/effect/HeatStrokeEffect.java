@@ -6,7 +6,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
-import net.redfox.survivaloverhaul.symptom.ModSymptoms;
+import net.redfox.survivaloverhaul.player.SymptomNerf;
 import net.redfox.survivaloverhaul.util.ModDamageTypes;
 
 public class HeatStrokeEffect extends MobEffect {
@@ -34,7 +34,7 @@ public class HeatStrokeEffect extends MobEffect {
 
   public static void applyStandardEffect(ServerPlayer player, double temp) {
     player.addEffect(
-        ModSymptoms.create(
+        SymptomNerf.create(
             ModEffects.HEAT_STROKE.get(), 120, Math.abs((int) ((50 - temp) / 30)) - 1));
   }
 }
