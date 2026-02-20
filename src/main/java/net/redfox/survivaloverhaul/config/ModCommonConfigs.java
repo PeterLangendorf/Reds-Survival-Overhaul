@@ -22,6 +22,7 @@ public class ModCommonConfigs {
   public static final ForgeConfigSpec.ConfigValue<List<? extends String>> GLOBAL_HUNGER_MULTIPLIERS;
   public static final ForgeConfigSpec.ConfigValue<Boolean> PASSIVE_EXHAUSTION_ENABLED;
   public static final ForgeConfigSpec.ConfigValue<Double> PASSIVE_EXHAUSTION_RATE;
+  public static final ForgeConfigSpec.ConfigValue<Boolean> INSTANT_STARVE_ENABLED;
   public static final ForgeConfigSpec.ConfigValue<Double> SPAWN_HEALTH_MULTIPLIER;
   public static final ForgeConfigSpec.ConfigValue<Double> SPAWN_HUNGER_MULTIPLIER;
   public static final ForgeConfigSpec.ConfigValue<Integer> EGG_COOLDOWN;
@@ -256,6 +257,7 @@ public class ModCommonConfigs {
                   .defineList(
                       "globalHungerMultiplier",
                       new ArrayList<>(Arrays.asList("peaceful:1", "easy:1.5", "normal:2", "hard:3")), obj -> obj instanceof String);
+          INSTANT_STARVE_ENABLED = BUILDER.comment("If true, the player will die instantly when they starve").define("instantStarveEnabled", true);
 
         }
         BUILDER.pop();
