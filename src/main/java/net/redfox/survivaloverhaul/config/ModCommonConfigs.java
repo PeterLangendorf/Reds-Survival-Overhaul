@@ -235,7 +235,9 @@ public class ModCommonConfigs {
         PASSIVE_EXHAUSTION =
             BUILDER
                 .comment("The exhaustion that is applied passively to the character.")
-                .define("passiveExhaustion", 0.00025d);
+                .comment("This number is in hunger/minute.")
+                .comment("For example, a value of 1 means that every minute, the player will have lost 1 hunger.")
+                .define("passiveExhaustion", 1d);
       }
       BUILDER.pop();
       BUILDER.push("food");
