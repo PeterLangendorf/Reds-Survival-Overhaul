@@ -16,7 +16,7 @@ import net.redfox.survivaloverhaul.util.ItemModifier;
 import net.redfox.survivaloverhaul.config.JsonConfigReader;
 
 public class FoodNerf {
-  private static final JsonArray JSON_FOOD_CATAGORIES = JsonConfigReader.getOrCreateJsonFile("food/food_types", JsonConfigReader.FOOD_TYPES).get("values").getAsJsonArray();
+  private static final JsonArray JSON_FOOD_CATEGORIES = JsonConfigReader.getOrCreateJsonFile("food/food_types", JsonConfigReader.FOOD_TYPES).get("values").getAsJsonArray();
   private static final JsonArray JSON_FOOD_OVERRIDES = JsonConfigReader.getOrCreateJsonFile("food/food_overrides", JsonConfigReader.FOOD_OVERRIDES).get("values").getAsJsonArray();
   private static final Map<Item, String> TOOLTIPS = new HashMap<>();
 
@@ -24,7 +24,7 @@ public class FoodNerf {
   public static void init() {
     JSON_FOOD_OVERRIDES.forEach(strItem -> {
       Item item = ForgeRegistries.ITEMS.getValue(ResourceLocation.parse(strItem.getAsJsonObject().get("food").getAsString()));
-      JsonObject category = JSON_FOOD_CATAGORIES.asList().stream().filter(
+      JsonObject category = JSON_FOOD_CATEGORIES.asList().stream().filter(
           element -> element.getAsJsonObject().get("name").getAsString().equals(strItem.getAsJsonObject().get("food_type").getAsString())).findFirst().get().getAsJsonObject();;
       ItemModifier.modifyItem(ItemModifier.Modification.STACK_SIZE, item, category.get("stack_size").getAsInt());
       ItemModifier.modifyItem(ItemModifier.Modification.FOODSAT, item, new FoodProperties.Builder().nutrition(category.get("food_value").getAsInt()).saturationMod(category.get("saturation_multiplier").getAsInt()).build());
